@@ -14,16 +14,6 @@ const gologin = GologinApi({
   token,
 });
 
-/**
- * Get list of all profiles from workspace using REST API
- * API Reference: https://gologin.com/docs/api-reference/workspace/get-all-profiles-in-workspace
- * 
- * REST API Example:
- * fetch('https://api.gologin.com/browser/v2?page=1&sorterField=createdAt&sorterOrder=descend', {
- *   method: 'GET',
- *   headers: {Authorization: 'Bearer <token>'}
- * })
- */
 async function getProfiles() {
   try {
     console.log('\n📋 Fetching profiles list from API...');
@@ -86,6 +76,7 @@ function displayProfiles(profiles) {
  * @param {string} profileId - The profile ID to start
  */
 async function startProfile(profileId) {
+
   if (!profileId) {
     throw new Error('Profile ID is required');
   }
@@ -101,6 +92,15 @@ async function startProfile(profileId) {
     const page = await browser.newPage();
     console.log('✅ New page created');
 
+    // Close all other pages, keep only the new one
+    const allPages = await browser.pages();
+    for (const p of allPages) {
+      if (p !== page) {
+        await p.close();
+      }
+    }
+    console.log('✅ Closed all other pages');
+
     // Goes to website and waits untill all parts of the website is loaded
     console.log('Navigating to whoer.net...');
     await page.goto('https://whoer.net/', { waitUntil: 'networkidle2' });
@@ -115,6 +115,7 @@ async function startProfile(profileId) {
     console.log('✅ Status found:', status);
 
     return { success: true, profileId, status };
+
   } catch (error) {
     console.error('\n❌ Error occurred while running profile');
     
@@ -203,12 +204,10 @@ async function main() {
     const profiles = await getProfiles();
     
     if (profiles.length === 0) {
-      console.log('\n⚠️  No profiles found');
-      console.log('Create a profile at: https://app.gologin.com/personalArea/Profiles');
+      console.log('\n⚠️  No profiles found');      
       process.exit(1);
     }
-    
-    // For testing: start only 1 profile (change limit to run more)
+        
     const PROFILE_LIMIT = 1; // Change to 0 to run all profiles
     const results = await startProfiles(profiles, PROFILE_LIMIT);
     
