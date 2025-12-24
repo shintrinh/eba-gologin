@@ -8,14 +8,15 @@
     "start": "node index.js",
     "dev": "node --watch index.js"
   },
-  "keywords": ["gologin", "scraping", "automation"],
+  "keywords": [
+    "gologin",
+    "scraping",
+    "automation"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.6.1",
     "gologin": "^2.1.33"
-  },
-  "dependencies": {
-    "gologin": "^2.1.33",
-    "dotenv": "^16.0.3"
   }
 }
