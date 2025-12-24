@@ -74,6 +74,7 @@ function displayProfiles(profiles) {
 /**
  * Start an existing profile
  * @param {string} profileId - The profile ID to start
+ * @returns {Object} Object containing success status, profileId, browser and page
  */
 async function startProfile(profileId) {
 
@@ -101,20 +102,7 @@ async function startProfile(profileId) {
     }
     console.log('✅ Closed all other pages');
 
-    // Goes to website and waits untill all parts of the website is loaded
-    console.log('Navigating to whoer.net...');
-    await page.goto('https://whoer.net/', { waitUntil: 'networkidle2' });
-    console.log('✅ Page loaded');
-
-    // Reads profile check result in website
-    const status = await page.$eval('.trustworthy:not(.hide)',
-      (elt) => elt?.innerText?.trim(),
-    );
-
-    await new Promise((resolve) => setTimeout(resolve, 10000));
-    console.log('✅ Status found:', status);
-
-    return { success: true, profileId, status };
+    return { success: true, profileId, browser, page };
 
   } catch (error) {
     console.error('\n❌ Error occurred while running profile');
@@ -128,6 +116,34 @@ async function startProfile(profileId) {
     } else {
       console.error('Error:', JSON.stringify(error, null, 2));
     }
+    throw error;
+  }
+}
+
+/**
+ * Navigate page to website and check status
+ * @param {Object} page - Puppeteer page object
+ * @param {string} url - URL to navigate to (default: https://whoer.net/)
+ * @returns {string} Status from the website
+ */
+async function navigateAndCheckPage(page, url = 'https://whoer.net/') {
+  try {
+    // Goes to website and waits untill all parts of the website is loaded
+    console.log(`Navigating to ${url}...`);
+    await page.goto(url, { waitUntil: 'networkidle2' });
+    console.log('✅ Page loaded');
+
+    // Reads profile check result in website
+    const status = await page.$eval('.trustworthy:not(.hide)',
+      (elt) => elt?.innerText?.trim(),
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 10000));
+    console.log('✅ Status found:', status);
+
+    return status;
+  } catch (error) {
+    console.error('\n❌ Error occurred while navigating page');
     throw error;
   }
 }
@@ -149,8 +165,13 @@ async function startProfiles(profiles, limit = 1) {
     
     try {
       console.log(`\n--- Profile ${i + 1}/${profilesToRun.length} ---`);
-      const result = await startProfile(profileId);
-      results.push(result);
+      const profileResult = await startProfile(profileId);
+      const status = await navigateAndCheckPage(profileResult.page);
+      results.push({ 
+        success: true, 
+        profileId, 
+        status
+      });
       console.log(`✅ Profile ${i + 1} completed successfully`);
     } catch (error) {
       console.error(`❌ Profile ${i + 1} failed:`, error.message);
