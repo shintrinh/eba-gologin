@@ -2,7 +2,14 @@ import { GologinApi } from 'gologin';
 import dotenv from 'dotenv';
 import 'dotenv/config'
 dotenv.config();
-const token = process.env.GL_API_TOKEN;
+
+// Configuration
+const config = {
+  apiToken: process.env.GL_API_TOKEN,
+  targetUrl: process.env.TARGET_URL || 'https://ebay.com/',
+};
+
+const token = config.apiToken;
 console.log('Using GL_API_TOKEN:', token ? '✅ Set' : '❌ Not Set');
 
 if (!token || token === 'your_dev_token_here') {
@@ -123,29 +130,23 @@ async function startProfile(profileId) {
 /**
  * Navigate page to website and check status
  * @param {Object} page - Puppeteer page object
- * @param {string} url - URL to navigate to (default: https://whoer.net/)
+ * @param {string} url - URL to navigate to (default: from config.targetUrl)
  * @returns {string} Status from the website
  */
-async function navigateAndCheckPage(page, url = 'https://whoer.net/') {
+async function navigateAndCheckPage(page, url = config.targetUrl) {
+
   try {
     // Goes to website and waits untill all parts of the website is loaded
     console.log(`Navigating to ${url}...`);
     await page.goto(url, { waitUntil: 'networkidle2' });
-    console.log('✅ Page loaded');
-
-    // Reads profile check result in website
-    const status = await page.$eval('.trustworthy:not(.hide)',
-      (elt) => elt?.innerText?.trim(),
-    );
-
-    await new Promise((resolve) => setTimeout(resolve, 10000));
-    console.log('✅ Status found:', status);
+    console.log('✅ Page loaded');    
 
     return status;
   } catch (error) {
     console.error('\n❌ Error occurred while navigating page');
     throw error;
   }
+  
 }
 
 /**

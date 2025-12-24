@@ -85,3 +85,6 @@ npm start 65abc1234567890def123456
 - [Gologin Quickstart](https://gologin.com/docs/api-reference/introduction/quickstart)
 - [Gologin Dashboard](https://app.gologin.com/)
 
+# Chuc nang:
+1. Lay danh sach profiles: Save lai token va profileID
+2. Moi profileID se save lai cac flow: mo trang, dang ky, tim kiem, mua hang
