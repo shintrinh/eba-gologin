@@ -1,12 +1,9 @@
 import { GologinApi } from 'gologin';
 import dotenv from 'dotenv';
 import 'dotenv/config'
-
-// Load environment variables
 dotenv.config();
-
-// Token can be passed here in code or from env 
 const token = process.env.GL_API_TOKEN;
+console.log('Using GL_API_TOKEN:', token ? '✅ Set' : '❌ Not Set');
 
 if (!token || token === 'your_dev_token_here') {
   console.error('❌ Error: GL_API_TOKEN not set or is placeholder value');
