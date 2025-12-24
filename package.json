@@ -1,0 +1,21 @@
+{
+  "name": "gologin-scraper",
+  "version": "1.0.0",
+  "description": "Anonymous scraping using Gologin API",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "keywords": ["gologin", "scraping", "automation"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "gologin": "^2.1.33"
+  },
+  "dependencies": {
+    "gologin": "^2.1.33",
+    "dotenv": "^16.0.3"
+  }
+}
